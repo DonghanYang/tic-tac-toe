@@ -1,52 +1,75 @@
-def get_num_char(string, char):
-    return len([x for x in string if x == char])
+class TicTacToeGameManager:
+    def __init__(self):
+        self.state = input('Enter cells: ')
+        self.coordinates_map = {
+            (1, 1): 6, (2, 1): 7, (3, 1): 8,
+            (1, 2): 3, (2, 2): 4, (3, 2): 5,
+            (1, 3): 0, (2, 3): 1, (3, 3): 2
+        }
+
+    def render_state(self):
+        print('-' * 9)
+        print('| ' + ' '.join(self.state[:3]) + ' |')
+        print('| ' + ' '.join(self.state[3:6]) + ' |')
+        print('| ' + ' '.join(self.state[6:9]) + ' |')
+        print('-' * 9)
+
+    def update_state(self):
+        [a, b] = input('Enter the coordinates: ').split()
+        if not a.isnumeric() or not b.isnumeric():
+            print('You should enter numbers!')
+            self.update_state()
+        elif int(a) > 3 or int(a) < 1 or int(b) > 3 or int(b) < 1:
+            print('Coordinates should be from 1 to 3!')
+            self.update_state()
+        elif self.state[self.coordinates_map[(int(a), int(b))]] != '_':
+            print('This cell is occupied! Choose another one!')
+            self.update_state()
+        else:
+            state_lst = list(self.state)
+            state_lst[self.coordinates_map[(int(a), int(b))]] = 'X'
+            self.state = ''.join(state_lst)
+            return
+
+    @staticmethod
+    def get_num_char_in_str(string, char):
+        return len([x for x in string if x == char])
+
+    def win(self, symbol):
+        return (self.state[0] == symbol and self.state[1] == symbol and self.state[2] == symbol) or \
+               (self.state[3] == symbol and self.state[4] == symbol and self.state[5] == symbol) or \
+               (self.state[6] == symbol and self.state[7] == symbol and self.state[8] == symbol) or \
+               (self.state[0] == symbol and self.state[3] == symbol and self.state[6] == symbol) or \
+               (self.state[1] == symbol and self.state[4] == symbol and self.state[7] == symbol) or \
+               (self.state[2] == symbol and self.state[5] == symbol and self.state[8] == symbol) or \
+               (self.state[0] == symbol and self.state[4] == symbol and self.state[8] == symbol) or \
+               (self.state[2] == symbol and self.state[4] == symbol and self.state[6] == symbol)
+
+    def draw(self):
+        return not self.win('X') and not self.win('O') and '_' not in self.state
+
+    def not_finished(self):
+        return not self.win('X') and not self.win('O') and '_' in self.state
+
+    def impossible(self):
+        return (self.win('X') and self.win('O')) or \
+               abs(self.get_num_char_in_str(self.state, 'X') - self.get_num_char_in_str(self.state, 'O')) >= 2
+
+    # def show_result(symbols):
+    #     if impossible(symbols):
+    #         print('Impossible')
+    #     elif not_finished(symbols):
+    #         print('Game not finished')
+    #     elif draw(symbols):
+    #         print('Draw')
+    #     elif win(symbols, 'X'):
+    #         print('X wins')
+    #     elif win(symbols, 'O'):
+    #         print('O wins')
 
 
-def win(symbols, who):
-    return (symbols[0] == who and symbols[1] == who and symbols[2] == who) or \
-           (symbols[3] == who and symbols[4] == who and symbols[5] == who) or \
-           (symbols[6] == who and symbols[7] == who and symbols[8] == who) or \
-           (symbols[0] == who and symbols[3] == who and symbols[6] == who) or \
-           (symbols[1] == who and symbols[4] == who and symbols[7] == who) or \
-           (symbols[2] == who and symbols[5] == who and symbols[8] == who) or \
-           (symbols[0] == who and symbols[4] == who and symbols[8] == who) or \
-           (symbols[2] == who and symbols[4] == who and symbols[6] == who)
-
-
-def draw(symbols):
-    return not win(symbols, 'X') and not win(symbols, 'O') and '_' not in symbols
-
-
-def not_finished(symbols):
-    return not win(symbols, 'X') and not win(symbols, 'O') and '_' in symbols
-
-
-def impossible(symbols):
-    return (win(symbols, 'X') and win(symbols, 'O')) or \
-        abs(get_num_char(symbols, 'X') - get_num_char(symbols, 'O')) >= 2
-
-
-def show_result(symbols):
-    if impossible(symbols):
-        print('Impossible')
-    elif not_finished(symbols):
-        print('Game not finished')
-    elif draw(symbols):
-        print('Draw')
-    elif win(symbols, 'X'):
-        print('X wins')
-    elif win(symbols, 'O'):
-        print('O wins')
-
-
-def render():
-    symbols = input('Enter cells: ')
-    print('-' * 9)
-    print('| ' + ' '.join(symbols[:3]) + ' |')
-    print('| ' + ' '.join(symbols[3:6]) + ' |')
-    print('| ' + ' '.join(symbols[6:9]) + ' |')
-    print('-' * 9)
-    show_result(symbols)
-
-
-render()
+if __name__ == '__main__':
+    game = TicTacToeGameManager()
+    game.render_state()
+    game.update_state()
+    game.render_state()
