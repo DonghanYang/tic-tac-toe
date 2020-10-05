@@ -1,11 +1,30 @@
 class TicTacToeGameManager:
     def __init__(self):
-        self.state = input('Enter cells: ')
+        self.state = '_' * 9
+        self.move_next = 'X'
+        self.end = False
+        self.end_message = ''
         self.coordinates_map = {
             (1, 1): 6, (2, 1): 7, (3, 1): 8,
             (1, 2): 3, (2, 2): 4, (3, 2): 5,
             (1, 3): 0, (2, 3): 1, (3, 3): 2
         }
+
+    def run(self):
+        self.render_empty_state()
+        while not self.end:
+            self.update_state()
+            self.render_state()
+            self.analyze_state()
+        print(self.end_message)
+
+    @staticmethod
+    def render_empty_state():
+        print('-' * 9)
+        print('|' + ' ' * 7 + '|')
+        print('|' + ' ' * 7 + '|')
+        print('|' + ' ' * 7 + '|')
+        print('-' * 9)
 
     def render_state(self):
         print('-' * 9)
@@ -27,9 +46,27 @@ class TicTacToeGameManager:
             self.update_state()
         else:
             state_lst = list(self.state)
-            state_lst[self.coordinates_map[(int(a), int(b))]] = 'X'
+            state_lst[self.coordinates_map[(int(a), int(b))]] = self.move_next
             self.state = ''.join(state_lst)
+            if self.move_next == 'X':
+                self.move_next = 'O'
+            else:
+                self.move_next = 'X'
             return
+
+    def analyze_state(self):
+        if self.not_finished():
+            return
+        elif self.draw():
+            self.end = True
+            self.end_message = 'Draw'
+        elif self.win('X'):
+            self.end = True
+            self.end_message = 'X wins'
+        elif self.win('O'):
+            self.end = True
+            self.end_message = 'O wins'
+        return
 
     @staticmethod
     def get_num_char_in_str(string, char):
@@ -51,25 +88,11 @@ class TicTacToeGameManager:
     def not_finished(self):
         return not self.win('X') and not self.win('O') and '_' in self.state
 
-    def impossible(self):
-        return (self.win('X') and self.win('O')) or \
-               abs(self.get_num_char_in_str(self.state, 'X') - self.get_num_char_in_str(self.state, 'O')) >= 2
-
-    # def show_result(symbols):
-    #     if impossible(symbols):
-    #         print('Impossible')
-    #     elif not_finished(symbols):
-    #         print('Game not finished')
-    #     elif draw(symbols):
-    #         print('Draw')
-    #     elif win(symbols, 'X'):
-    #         print('X wins')
-    #     elif win(symbols, 'O'):
-    #         print('O wins')
+    # def impossible(self):
+    #     return (self.win('X') and self.win('O')) or \
+    #            abs(self.get_num_char_in_str(self.state, 'X') - self.get_num_char_in_str(self.state, 'O')) >= 2
 
 
 if __name__ == '__main__':
     game = TicTacToeGameManager()
-    game.render_state()
-    game.update_state()
-    game.render_state()
+    game.run()
